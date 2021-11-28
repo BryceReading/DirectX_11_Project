@@ -13,14 +13,14 @@ bool engine::processMessages()
 
 void engine::update()
 {
-	while (!keyboard.charBufferIsEmpty()) 
+	while (!keyboard.charBufferIsEmpty())
 	{
 		unsigned char ch = keyboard.readChar();
-		string outMsg = "Char: ";
-		outMsg += ch;
-		outMsg += "\n";
-		OutputDebugStringA(outMsg.c_str());
 	}
 
-	// continue from 11.01 in vid 5 
+	while (!keyboard.keyBufferIsEmpty())
+	{
+		KeyboardEvent event = keyboard.readKey();
+		unsigned char keyCode = event.getKeyCoad();
+	}
 }
