@@ -73,22 +73,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)DirectX_11_Project\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)DirectX_11_Project\Libs\x86\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)DirectX_11_Project\Lib%27s\x86\Debug;$(SolutionDir)DirectX_11_Project\Libs\x86\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)DirectX_11_Project\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)DirectX_11_Project\Libs\x86\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)DirectX_11_Project\Lib%27s\x86\Release;$(SolutionDir)DirectX_11_Project\Libs\x86\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)DirectX_11_Project\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)DirectX_11_Project\Libs\x64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)DirectX_11_Project\Lib%27s\x64\Debug;$(SolutionDir)DirectX_11_Project\Libs\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)DirectX_11_Project\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)DirectX_11_Project\Libs\x64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)DirectX_11_Project\Lib%27s\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
