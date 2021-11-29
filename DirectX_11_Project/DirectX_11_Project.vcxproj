@@ -164,6 +164,7 @@
     <ClInclude Include="ErrorLogger.h" />
     <ClInclude Include="Keyboard\KeyboardClass.h" />
     <ClInclude Include="Keyboard\KeyboardEvent.h" />
+    <ClInclude Include="MouseEvent.h" />
     <ClInclude Include="Mouse\MouseClass.h" />
     <ClInclude Include="Mouse\MouseEvent.h" />
     <ClInclude Include="RenderWin.h" />
