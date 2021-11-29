@@ -8,9 +8,9 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	return true;
 }
 
-bool Graphics::InitializeDX(HWND hwnd, int width, int height) 
+bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 {
-	
+
 
 	return true;
 }
