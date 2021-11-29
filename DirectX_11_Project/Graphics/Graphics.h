@@ -1,5 +1,6 @@
 #pragma once
 #include "AdaptorReader.h"
+
 class Graphics
 {
 public:
