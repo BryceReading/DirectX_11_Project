@@ -10,7 +10,7 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 
 bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 {
-
+	vector<AdapterData> adapter = AdapterReader::GetAdapter();
 
 	return true;
 }

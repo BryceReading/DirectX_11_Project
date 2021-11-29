@@ -9,6 +9,7 @@ class RenderWin
 public:
 	bool initialize(WindowContainer * pwindowContainer, HINSTANCE hInstance, string window_Title, string window_Class, int width, int height);
 	bool processMsg();
+	HWND GetHWND() const;
 	~RenderWin();
 private:
 	void registerWindowClass();

@@ -64,6 +64,11 @@ bool RenderWin::processMsg()
     return true;
 }
 
+HWND RenderWin::GetHWND() const
+{
+    return this->handle;
+}
+
 RenderWin::~RenderWin()
 {
     if (this->handle != NULL)

@@ -2,8 +2,12 @@
 
 bool engine::initialize(HINSTANCE hInstance, string window_Title, string window_Class, int width, int height)
 {
-	return this->render_Win.initialize(this, hInstance,window_Title, window_Class, width, height);
-	
+	if(!this->render_Win.initialize(this, hInstance,window_Title, window_Class, width, height))
+		return false;
+	if (!gfx.Initialize(this->render_Win.GetHWND(), width, height))
+		return false;
+
+	return true;
 }
 
 bool engine::processMessages()

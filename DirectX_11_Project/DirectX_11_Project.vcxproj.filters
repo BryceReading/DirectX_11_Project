@@ -66,7 +66,7 @@
     <ClCompile Include="Graphics\Graphics.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="AdapterReader.cpp">
+    <ClCompile Include="Graphics\AdapterReader.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,10 +101,10 @@
     <ClInclude Include="MouseEvent.h">
       <Filter>Header Files\Mouse</Filter>
     </ClInclude>
-    <ClInclude Include="AdaptorReader.h">
+    <ClInclude Include="Graphics\Graphics.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
+    <ClInclude Include="Graphics\AdaptorReader.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

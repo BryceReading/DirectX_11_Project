@@ -1,5 +1,5 @@
 #pragma once
-#include "ErrorLogger.h"
+#include "..\\ErrorLogger.h"
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "DirectXTK.lib")
@@ -18,7 +18,7 @@ public:
 class AdapterReader
 {
 public:
-	static vector<AdapterData> GetAdapterData();
+	static vector<AdapterData> GetAdapter();
 
 private:
 	static vector<AdapterData> adaptor;
