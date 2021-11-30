@@ -5,7 +5,17 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	if (!InitializeDX(hwnd, width, height))
 		return false;
 
+	if (!shaderInitizer())
+		return false;
+
 	return true;
+}
+
+void Graphics::frameRender()
+{
+	float bGColour[] = { 0.0f, 1.0f, 1.0f, 1.0f };
+	this->deviceContext->ClearRenderTargetView(this->renderTargetView.Get(), bGColour);
+	this->swapChain->Present(1, NULL);
 }
 
 bool Graphics::InitializeDX(HWND hwnd, int width, int height)
@@ -60,7 +70,47 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 		return false;
 	}
 
-	//hr = this->device->CreateRenderTargetView()
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+	hr = this->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**> (backBuffer.GetAddressOf()));
+
+	// Checking for any Errors
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Get Buffer Failed.");
+		return false;
+	}
+
+	hr = this->device->CreateRenderTargetView(backBuffer.Get(), NULL, this->renderTargetView.GetAddressOf());
+
+	// Checking for any Errors
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create rende target view.");
+		return false;
+	}
+
+	this->deviceContext->OMSetRenderTargets(1, this->renderTargetView.GetAddressOf(), NULL);
+
+	return true;
+}
+
+bool Graphics::shaderInitizer()
+{
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	UINT numElements = ARRAYSIZE(layout);
+
+	HRESULT hR = this->device->CreateInputLayout(layout, numElements, shader_Vertex_Buffer->GetBufferPointer(), shader_Vertex_Buffer->GetBufferSize(), this->layoutInput.GetAddressOf());
+
+	// Checking for any Errors
+	if (FAILED(hR))
+	{
+		ErrorLogger::Log(hR, "Failed to create rende target view.");
+		return false;
+	}
 
 	return true;
 }

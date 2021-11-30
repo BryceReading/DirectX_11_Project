@@ -6,5 +6,5 @@ public:
 	bool initialize(HINSTANCE hInstance, string window_Title, string window_Class, int width, int height);
 	bool processMessages();
 	void update();
-
+	void frameRender();
 };

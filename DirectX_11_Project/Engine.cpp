@@ -28,3 +28,8 @@ void engine::update()
 		unsigned char keyCode = event.getKeyCoad();
 	}
 }
+
+void engine::frameRender()
+{
+	gfx.frameRender();
+}
