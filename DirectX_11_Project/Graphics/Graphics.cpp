@@ -96,6 +96,29 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 
 bool Graphics::shaderInitizer()
 {
+
+	wstring shaderFolder = L"";
+#pragma region DetermineShaderPath
+	if (IsDebuggerPresent() == TRUE)
+	{
+#ifdef _DEBUG
+	#ifdef _WIN64 // x64
+			shaderFolder = L"..\\x64\\Debug\\";
+	#else // x86 (Win32)
+			shaderFolder = L"..\\Debug\\";
+	#endif 
+	#else // Release
+	#ifdef _WIN64 // x64
+			shaderFolder = L"..\\x64\\Release\\";
+	#else // x86 (Win32)
+			shaderFolder = L"..\\Release\\";
+	#endif 
+#endif 
+	}
+
+	if (!vertexShader.initialize(this->device, shaderFolder + L"VertexShader.cso"))
+		return false;
+
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
@@ -103,7 +126,7 @@ bool Graphics::shaderInitizer()
 
 	UINT numElements = ARRAYSIZE(layout);
 
-	HRESULT hR = this->device->CreateInputLayout(layout, numElements, shader_Vertex_Buffer->GetBufferPointer(), shader_Vertex_Buffer->GetBufferSize(), this->layoutInput.GetAddressOf());
+	HRESULT hR = this->device->CreateInputLayout(layout, numElements, vertexShader.getBuffer()->GetBufferPointer(), vertexShader.getBuffer()->GetBufferSize(), this->layoutInput.GetAddressOf());
 
 	// Checking for any Errors
 	if (FAILED(hR))

@@ -1,5 +1,6 @@
 #pragma once
 #include "AdaptorReader.h"
+#include "Shaders.h"
 
 class Graphics
 {
@@ -17,5 +18,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> layoutInput;
-	Microsoft::WRL::ComPtr<ID3D10Blob> shader_Vertex_Buffer;
+
+	VertexShader vertexShader;
 };
