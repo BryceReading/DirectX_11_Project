@@ -1,6 +1,6 @@
 #include "..\Graphics\Shaders.h"
 
-bool VertexShader::initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, wstring shaderPathway)
+bool VertexShader::initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, wstring shaderPathway, D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT elementNum)
 {
 	HRESULT hr = D3DReadFileToBlob(shaderPathway.c_str(), this->shader_buffer.GetAddressOf());
 	if (FAILED(hr))
@@ -20,6 +20,15 @@ bool VertexShader::initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, wstr
 		return false;
 	}
 	
+	hr= device->CreateInputLayout(layoutDesc, elementNum, this->shader_buffer->GetBufferPointer(), this->shader_buffer->GetBufferSize(), this->inputLayout.GetAddressOf());
+
+	// Checking for any Errors
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create rende target view.");
+		return false;
+	}
+
 	return true;
 }
 
@@ -31,4 +40,9 @@ ID3D11VertexShader* VertexShader::getShader()
 ID3D10Blob* VertexShader::getBuffer()
 {
 	return this->shader_buffer.Get();
+}
+
+ID3D11InputLayout* VertexShader::getInputLayout()
+{
+	return this->inputLayout.Get();
 }

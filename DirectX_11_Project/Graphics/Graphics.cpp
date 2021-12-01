@@ -91,6 +91,18 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 
 	this->deviceContext->OMSetRenderTargets(1, this->renderTargetView.GetAddressOf(), NULL);
 
+	//** Create the Viewport **//
+	D3D11_VIEWPORT viewP;
+	ZeroMemory(&viewP, sizeof(D3D11_VIEWPORT));
+
+	viewP.TopLeftX = 0;
+	viewP.TopLeftY = 0;
+	viewP.Width = 800;
+	viewP.Height = 600;
+
+	// Set the Viewport
+	this->deviceContext->RSSetViewports(1, &viewP);
+
 	return true;
 }
 
@@ -116,9 +128,6 @@ bool Graphics::shaderInitizer()
 #endif 
 	}
 
-	if (!vertexShader.initialize(this->device, shaderFolder + L"VertexShader.cso"))
-		return false;
-
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
@@ -126,14 +135,8 @@ bool Graphics::shaderInitizer()
 
 	UINT numElements = ARRAYSIZE(layout);
 
-	HRESULT hR = this->device->CreateInputLayout(layout, numElements, vertexShader.getBuffer()->GetBufferPointer(), vertexShader.getBuffer()->GetBufferSize(), this->layoutInput.GetAddressOf());
-
-	// Checking for any Errors
-	if (FAILED(hR))
-	{
-		ErrorLogger::Log(hR, "Failed to create rende target view.");
+	if (!vertexShader.initialize(this->device, shaderFolder + L"VertexShader.cso", layout, numElements))
 		return false;
-	}
 
 	return true;
 }
