@@ -22,6 +22,7 @@ void Graphics::frameRender()
 	//** Drawing **//
 	this->deviceContext->IASetInputLayout(this->vertexShader.getInputLayout());
 	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->deviceContext->RSSetState(this->rasterState.Get());
 
 	this->deviceContext->VSSetShader(vertexShader.getShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixel.GetShader(), NULL, 0);
@@ -119,6 +120,20 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 
 	// Set the Viewport
 	this->deviceContext->RSSetViewports(1, &viewP);
+
+	// Rasterizer state created
+	D3D11_RASTERIZER_DESC rasterDesc;
+	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	rasterDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+	
+	hr = this->device->CreateRasterizerState(&rasterDesc, this->rasterState.GetAddressOf());
+
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create Rasterizer state.");
+		return false;
+	}
 
 	return true;
 }
