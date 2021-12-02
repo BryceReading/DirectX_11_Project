@@ -15,9 +15,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	return 0;
 }
 
-//** rendering Pipeline  **//
+//** Rendering Pipeline  **//
 //** - Input Assembler  **// Completed
 //** - Vertex Shader   **//  Completed
 //** - Rasterizer     **//	 Completed
-//** - Pixel Shader  **//	 
+//** - Pixel Shader  **//	 Completed
 //** - Output Merger *//	 Completed
+
+//** Vertex buffer **//
+//**     Draw	  **//

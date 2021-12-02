@@ -8,13 +8,30 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	if (!shaderInitizer())
 		return false;
 
+	if (!sceneInitizer())
+		return false;
+
 	return true;
 }
 
 void Graphics::frameRender()
 {
-	float bGColour[] = { 0.0f, 1.0f, 1.0f, 1.0f };
+	float bGColour[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	this->deviceContext->ClearRenderTargetView(this->renderTargetView.Get(), bGColour);
+	
+	//** Drawing **//
+	this->deviceContext->IASetInputLayout(this->vertexShader.getInputLayout());
+	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	this->deviceContext->VSSetShader(vertexShader.getShader(), NULL, 0);
+	this->deviceContext->PSSetShader(pixel.GetShader(), NULL, 0);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+
+	this->deviceContext->Draw(3, 0);
+	
 	this->swapChain->Present(1, NULL);
 }
 
@@ -137,6 +154,41 @@ bool Graphics::shaderInitizer()
 
 	if (!vertexShader.initialize(this->device, shaderFolder + L"VertexShader.cso", layout, numElements))
 		return false;
+
+	if(!pixel.Initialize(this->device, shaderFolder + L"pixelshader.cso"))
+		return false;
+
+	return true;
+}
+
+bool Graphics::sceneInitizer()
+{
+	Vertex v[] =
+	{
+		Vertex(0.0f, -0.2f),
+		Vertex(-0.1f, 0.0f),
+		Vertex(0.1f, 0.0f),
+	};
+
+	D3D11_BUFFER_DESC vertexBuffDesc;
+	ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
+
+	vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBuffDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
+	vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBuffDesc.CPUAccessFlags = 0;
+	vertexBuffDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData;
+	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+	vertexBufferData.pSysMem = v;
+
+	HRESULT hr = this->device->CreateBuffer(&vertexBuffDesc, &vertexBufferData, this->vertexBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
+		return false;
+	}
 
 	return true;
 }
