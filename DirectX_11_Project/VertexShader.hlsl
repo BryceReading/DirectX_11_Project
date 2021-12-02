@@ -1,6 +1,21 @@
 //** Shaders should always end in hlsl (high level shader language) **// 
 
-float4 main(float2 pos : POSITION) : SV_POSITION
+struct VS_INPUT
 {
-	return float4(pos, 0, 1);
+    float2 posIn : POSITION;
+    float3 colourIn : COLOUR;
+};
+
+struct VS_OUTPUT
+{
+    float4 posOut : SV_POSITION;
+    float3 colourOut : COLOUR;
+};
+
+VS_OUTPUT main(VS_INPUT input)
+{
+    VS_OUTPUT outP;
+    outP.posOut = float4(input.posIn, 0.0f, 1.0f);
+    outP.colourOut = input.colourIn;
+    return outP;
 }
