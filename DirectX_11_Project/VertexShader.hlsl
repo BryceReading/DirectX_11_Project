@@ -2,7 +2,7 @@
 
 struct VS_INPUT
 {
-    float2 posIn : POSITION;
+    float3 posIn : POSITION;
     float3 colourIn : COLOUR;
 };
 
@@ -15,7 +15,7 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT outP;
-    outP.posOut = float4(input.posIn, 0.0f, 1.0f);
+    outP.posOut = float4(input.posIn, 1.0f);
     outP.colourOut = input.colourIn;
     return outP;
 }

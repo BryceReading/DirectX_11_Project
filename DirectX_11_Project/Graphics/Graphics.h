@@ -23,6 +23,11 @@ private:
 	PixelShader pixel;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer2;
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthSV;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>depthSB;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthSS;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterState;
 };
