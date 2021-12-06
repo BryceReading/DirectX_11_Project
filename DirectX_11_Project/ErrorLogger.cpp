@@ -21,9 +21,3 @@ void ErrorLogger::Log(HRESULT hr, wstring message)
 	wstring error_message = L"Error: " + message + L"\n" + error.ErrorMessage();
 	MessageBoxW(NULL, error_message.c_str(), L"Error", MB_ICONERROR);
 }
-
-void ErrorLogger::Log(Exceptions & exception)
-{
-	wstring error_message = exception.what();
-	MessageBoxW(NULL, error_message.c_str(), L"Error", MB_ICONERROR);
-}

@@ -162,7 +162,6 @@
     <ClCompile Include="WindowContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Exeption.h" />
     <ClInclude Include="Graphics\AdaptorReader.h" />
     <ClInclude Include="ConverString.h" />
     <ClInclude Include="Engine.h" />
