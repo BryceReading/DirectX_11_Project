@@ -30,4 +30,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthSS;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterState;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
 };

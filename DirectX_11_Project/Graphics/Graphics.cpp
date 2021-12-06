@@ -16,7 +16,7 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 
 void Graphics::frameRender()
 {
-	float bGColour[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bGColour[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	
 	this->deviceContext->ClearRenderTargetView(this->renderTargetView.Get(), bGColour);
 	this->deviceContext->ClearDepthStencilView(this->depthSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -24,10 +24,11 @@ void Graphics::frameRender()
 	
 	//** Drawing **//
 	this->deviceContext->IASetInputLayout(this->vertexShader.getInputLayout());
-	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->deviceContext->RSSetState(this->rasterState.Get());
 
 	this->deviceContext->OMSetDepthStencilState(this->depthSS.Get(), 0);
+	this->deviceContext->PSSetSamplers(0, 1, this->samplerState.GetAddressOf());
 
 	this->deviceContext->VSSetShader(vertexShader.getShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixel.GetShader(), NULL, 0);
@@ -36,12 +37,12 @@ void Graphics::frameRender()
 	UINT offset = 0;
 
 	// Iner Triangle
-	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(3, 0);
+	//this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
+	//this->deviceContext->Draw(3, 0);
 
 	// Outer Triangle
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(3, 0);
+	this->deviceContext->Draw(6, 0);
 	
 	this->swapChain->Present(1, NULL);
 }
@@ -189,6 +190,24 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 		return false;
 	}
 
+	//** Sampler State **// Does fully work
+	D3D11_SAMPLER_DESC sDesc;
+	ZeroMemory(&sDesc, sizeof(sDesc));
+	sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sDesc.MinLOD = 0;
+	sDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = this->device->CreateSamplerState(&sDesc, this->samplerState.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create Sampler state.");
+		return false;
+	}
+
 	return true;
 }
 
@@ -217,7 +236,7 @@ bool Graphics::shaderInitizer()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOUR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
@@ -235,10 +254,13 @@ bool Graphics::sceneInitizer()
 {
 	Vertex v[] =
 	{ 
-	//		   X Pos  Y Pos   Z Pos  R    G	    B
-		Vertex(-0.5f, -0.5,  1.0f, 1.0f, 0.0f, 0.0f),
-		Vertex( 0.0f,  0.5f, 1.0f, 1.0f, 0.0f, 0.0f),
-		Vertex( 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f),
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f),
+		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f),
+		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f),
+
+		Vertex(-0.5f,  -0.5f, 1.0f, 0.0f, 1.0f),
+		Vertex( 0.5f,   0.5f, 1.0f, 1.0f, 0.0f),
+		Vertex( 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f),
 	};
 
 	D3D11_BUFFER_DESC vertexBuffDesc;
@@ -262,7 +284,7 @@ bool Graphics::sceneInitizer()
 	}
 
 	// Second Triangle 
-	Vertex v2[] =
+	/*Vertex v2[] =
 	{
 		//	   X Pos  Y Pos   Z Pos  R		G	  B
 		Vertex(-0.25f, -0.25,  0.0f, 1.0f, 1.0f, 0.0f),
@@ -286,7 +308,7 @@ bool Graphics::sceneInitizer()
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
-	}
+	}*/
 
 	return true;
 }
