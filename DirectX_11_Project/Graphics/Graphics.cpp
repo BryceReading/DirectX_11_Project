@@ -24,10 +24,11 @@ void Graphics::frameRender()
 	
 	//** Drawing **//
 	this->deviceContext->IASetInputLayout(this->vertexShader.getInputLayout());
-	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->deviceContext->RSSetState(this->rasterState.Get());
 
 	this->deviceContext->OMSetDepthStencilState(this->depthSS.Get(), 0);
+	this->deviceContext->PSSetSamplers(0, 1, this->samplerState.GetAddressOf());
 
 	this->deviceContext->VSSetShader(vertexShader.getShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixel.GetShader(), NULL, 0);
@@ -36,10 +37,6 @@ void Graphics::frameRender()
 	UINT offset = 0;
 
 	// Iner Triangle
-	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(3, 0);
-
-	// Outer Triangle
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 	this->deviceContext->Draw(3, 0);
 	
@@ -179,7 +176,7 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 	// Rasterizer state created
 	D3D11_RASTERIZER_DESC rasterDesc;
 	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
-	rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_WIREFRAME;
 	rasterDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
 	
 	hr = this->device->CreateRasterizerState(&rasterDesc, this->rasterState.GetAddressOf());
@@ -187,6 +184,24 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create Rasterizer state.");
+		return false;
+	}
+
+	//** Sampler state **//
+	D3D11_SAMPLER_DESC sDesc;
+	ZeroMemory(&sDesc, sizeof(sDesc));
+	sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sDesc.MinLOD = 0;
+	sDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = this->device->CreateSamplerState(&sDesc, this->samplerState.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create Sampler state.");
 		return false;
 	}
 
@@ -218,7 +233,7 @@ bool Graphics::shaderInitizer()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOUR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
@@ -234,58 +249,68 @@ bool Graphics::shaderInitizer()
 
 bool Graphics::sceneInitizer()
 {
-	Vertex v[] =
-	{ 
-	//		   X Pos  Y Pos   Z Pos  R    G	    B
-		Vertex(-0.5f, -0.5,  1.0f, 1.0f, 0.0f, 0.0f),
-		Vertex( 0.0f,  0.5f, 1.0f, 1.0f, 0.0f, 0.0f),
-		Vertex( 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f),
-	};
-
-	D3D11_BUFFER_DESC vertexBuffDesc;
-	ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
-
-	vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBuffDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
-	vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBuffDesc.CPUAccessFlags = 0;
-	vertexBuffDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA vertexBufferData;
-	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = v;
-
-	HRESULT hr = this->device->CreateBuffer(&vertexBuffDesc, &vertexBufferData, this->vertexBuffer.GetAddressOf());
-	if (FAILED(hr))
+	try
 	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
-		return false;
+		Vertex v[] =
+		{
+			//		   X Pos  Y Pos   Z Pos  R    G	    B
+				Vertex(-0.25f, -0.25,  0.0f, 0.0f, 1.0f),
+				Vertex(0.0f,   0.25f, 0.0f, 0.5f, 0.0f),
+				Vertex(0.25f, -0.25f, 0.0f, 1.0f, 1.0f),
+		};
+
+		D3D11_BUFFER_DESC vertexBuffDesc;
+		ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
+
+		vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexBuffDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
+		vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexBuffDesc.CPUAccessFlags = 0;
+		vertexBuffDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData;
+		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+		vertexBufferData.pSysMem = v;
+
+		HRESULT hr = this->device->CreateBuffer(&vertexBuffDesc, &vertexBufferData, this->vertexBuffer.GetAddressOf());
+		if (FAILED(hr))
+		{
+			ErrorLogger::Log(hr, "Failed to create vertex buffer.");
+			return false;
+		}
+
+		// Grid 
+		/*Vertex v_Grid[] =
+		{
+			//	   X Pos  Y Pos   Z Pos  R		G	  B
+			//Vertex(-0.9f,  0.9f,  1.0f,  1.0f,  0.0f, 0.0f), // Top Left
+			//Vertex(-0.9f, -0.9f,  1.0f,  0.0f,  1.0f, 0.0f), // Bottom Left
+		};
+
+		ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
+
+		vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexBuffDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v_Grid);
+		vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexBuffDesc.CPUAccessFlags = 0;
+		vertexBuffDesc.MiscFlags = 0;
+
+		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+		vertexBufferData.pSysMem = v_Grid;
+
+		hr = this->device->CreateBuffer(&vertexBuffDesc, &vertexBufferData, this->vertexBuffer_Grid.GetAddressOf());
+		if (FAILED(hr))
+		{
+			ErrorLogger::Log(hr, "Failed to create vertex buffer for Grid.");
+			return false;
+		}
+			//Vertex( 0.9f, -0.9f,  1.0f,  0.0f,  0.0f, 1.0f), // Bottom Right
+			//Vertex( 0.9f,  0.9f,  1.0f,  1.0f,  1.0f, 0.0f), // Top Right*/
+
 	}
-
-	// Second Triangle 
-	Vertex v2[] =
+	catch (Exceptions& exception)
 	{
-		//	   X Pos  Y Pos   Z Pos  R		G	  B
-		Vertex(-0.25f, -0.25,  0.0f, 1.0f, 1.0f, 0.0f),
-		Vertex( 0.0f,   0.25f, 0.0f, 1.0f, 1.0f, 0.0f),
-		Vertex( 0.25f, -0.25f, 0.0f, 1.0f, 1.0f, 0.0f),
-	};
-
-	ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
-
-	vertexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBuffDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
-	vertexBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBuffDesc.CPUAccessFlags = 0;
-	vertexBuffDesc.MiscFlags = 0;
-
-	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = v2;
-
-	hr = this->device->CreateBuffer(&vertexBuffDesc, &vertexBufferData, this->vertexBuffer2.GetAddressOf());
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
+		ErrorLogger::Log(exception);
 		return false;
 	}
 
