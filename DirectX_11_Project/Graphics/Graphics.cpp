@@ -74,8 +74,7 @@ bool Graphics::InitializeDX(HWND hwnd, int width, int height)
 	scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	HRESULT hr;
-	hr = D3D11CreateDeviceAndSwapChain(
+	HRESULT hr =  D3D11CreateDeviceAndSwapChain(
 			adapter[0].pAdaptor, // IDXGI Adapter
 			D3D_DRIVER_TYPE_UNKNOWN,
 			NULL, // Softwere Driver
