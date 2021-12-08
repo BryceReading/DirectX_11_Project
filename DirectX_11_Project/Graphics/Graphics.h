@@ -2,6 +2,7 @@
 #include "AdaptorReader.h"
 #include "Shaders.h"
 #include "Vertex.h"
+#include <WICTextureLoader.h>
 
 class Graphics
 {
@@ -24,6 +25,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer2;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> bufferIndices;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthSV;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>depthSB;
@@ -31,4 +33,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
+
 };

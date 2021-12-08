@@ -41,8 +41,11 @@ void Graphics::frameRender()
 	//this->deviceContext->Draw(3, 0);
 
 	// Outer Triangle
+	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-	this->deviceContext->Draw(6, 0);
+	this->deviceContext->IASetIndexBuffer(bufferIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	this->deviceContext->DrawIndexed(6, 0, 0);
 	
 	this->swapChain->Present(1, NULL);
 }
@@ -257,10 +260,13 @@ bool Graphics::sceneInitizer()
 		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f),
 		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f),
 		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f),
+		Vertex( 0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
+	};
 
-		Vertex(-0.5f,  -0.5f, 1.0f, 0.0f, 1.0f),
-		Vertex( 0.5f,   0.5f, 1.0f, 1.0f, 0.0f),
-		Vertex( 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f),
+	DWORD indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
 	};
 
 	D3D11_BUFFER_DESC vertexBuffDesc;
@@ -281,6 +287,24 @@ bool Graphics::sceneInitizer()
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
+	}
+
+	//** Index Data **\\ 
+	D3D11_BUFFER_DESC indexBuffDesc;
+	ZeroMemory(&indexBuffDesc, sizeof(indexBuffDesc));
+	indexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBuffDesc.ByteWidth = sizeof(DWORD) * ARRAYSIZE(indices);
+	indexBuffDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBuffDesc.CPUAccessFlags = 0;
+	indexBuffDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+	indexData.pSysMem = indices;
+	hr = device->CreateBuffer(&indexBuffDesc, &indexData, bufferIndices.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create indices buffer.");
+		return hr;
 	}
 
 	// Second Triangle 
@@ -309,6 +333,14 @@ bool Graphics::sceneInitizer()
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
 	}*/
+
+	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"Data\\Textures\\Skull.png", nullptr, texture.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
+		return false;
+
+	}
 
 	return true;
 }
