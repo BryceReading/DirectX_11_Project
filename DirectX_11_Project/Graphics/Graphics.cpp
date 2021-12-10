@@ -37,8 +37,12 @@ void Graphics::frameRender()
 	UINT offset = 0;
 
 	// Iner Triangle
-	//this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
-	//this->deviceContext->Draw(3, 0);
+	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
+	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
+	this->deviceContext->IASetIndexBuffer(bufferIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	this->deviceContext->DrawIndexed(6, 0, 0);
+
 
 	// Outer Triangle
 	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
@@ -257,10 +261,10 @@ bool Graphics::sceneInitizer()
 {
 	Vertex v[] =
 	{ 
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f),
-		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f),
-		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f),
-		Vertex( 0.5f, -0.5f, 1.0f, 1.0f, 1.0f),
+		Vertex(-0.9f, -0.5f, 1.0f, 0.0f, 1.0f),
+		Vertex(-0.9f,  0.5f, 1.0f, 0.0f, 0.0f),
+		Vertex( 0.0f,  0.5f, 1.0f, 1.0f, 0.0f),
+		Vertex( 0.0f, -0.5f, 1.0f, 1.0f, 1.0f),
 	};
 
 	DWORD indices[] =
@@ -308,12 +312,18 @@ bool Graphics::sceneInitizer()
 	}
 
 	// Second Triangle 
-	/*Vertex v2[] =
+	Vertex v2[] =
 	{
-		//	   X Pos  Y Pos   Z Pos  R		G	  B
-		Vertex(-0.25f, -0.25,  0.0f, 1.0f, 1.0f, 0.0f),
-		Vertex( 0.0f,   0.25f, 0.0f, 1.0f, 1.0f, 0.0f),
-		Vertex( 0.25f, -0.25f, 0.0f, 1.0f, 1.0f, 0.0f),
+		Vertex( 0.0f, -0.5f, 1.0f, 0.0f, 1.0f),
+		Vertex( 0.0f,  0.5f, 1.0f, 0.0f, 0.0f),
+		Vertex(-0.9f,  0.5f, 1.0f, 1.0f, 0.0f),
+		Vertex(-0.9f, -0.5f, 1.0f, 1.0f, 1.0f),
+	};
+
+		DWORD indices2[] =
+	{
+		0, 1, 2,
+		0, 2, 3
 	};
 
 	ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
@@ -332,7 +342,7 @@ bool Graphics::sceneInitizer()
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
-	}*/
+	}
 
 	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"Data\\Textures\\Skull.png", nullptr, texture.GetAddressOf());
 	if (FAILED(hr))
