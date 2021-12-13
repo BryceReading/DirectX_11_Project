@@ -3,6 +3,7 @@
 #include "Shaders.h"
 #include "Vertex.h"
 #include <WICTextureLoader.h>
+#include "Indexbuffer.h"
 
 class Graphics
 {
@@ -25,7 +26,8 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer2;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> bufferIndices;
+
+	IndexBuffer bufferIndices;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthSV;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>depthSB;

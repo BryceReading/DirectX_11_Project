@@ -36,13 +36,13 @@ void Graphics::frameRender()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
+
 	// Iner Triangle
 	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
 	this->deviceContext->IASetIndexBuffer(bufferIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	this->deviceContext->DrawIndexed(6, 0, 0);
-
+	this->deviceContext->DrawIndexed(bufferIndices.BufferSize(), 0, 0);
 
 	// Outer Triangle
 	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
@@ -273,6 +273,7 @@ bool Graphics::sceneInitizer()
 		0, 2, 3
 	};
 
+	//** Vertex Data **\\ 
 	D3D11_BUFFER_DESC vertexBuffDesc;
 	ZeroMemory(&vertexBuffDesc, sizeof(vertexBuffDesc));
 
@@ -294,17 +295,8 @@ bool Graphics::sceneInitizer()
 	}
 
 	//** Index Data **\\ 
-	D3D11_BUFFER_DESC indexBuffDesc;
-	ZeroMemory(&indexBuffDesc, sizeof(indexBuffDesc));
-	indexBuffDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBuffDesc.ByteWidth = sizeof(DWORD) * ARRAYSIZE(indices);
-	indexBuffDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBuffDesc.CPUAccessFlags = 0;
-	indexBuffDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indexData;
-	indexData.pSysMem = indices;
-	hr = device->CreateBuffer(&indexBuffDesc, &indexData, bufferIndices.GetAddressOf());
+	hr = this->bufferIndices.Initialize(this->device.Get(), indices, ARRAYSIZE(indices));
+	
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create indices buffer.");
@@ -314,10 +306,10 @@ bool Graphics::sceneInitizer()
 	// Second Triangle 
 	Vertex v2[] =
 	{
-		Vertex( 0.0f, -0.5f, 1.0f, 0.0f, 1.0f),
-		Vertex( 0.0f,  0.5f, 1.0f, 0.0f, 0.0f),
-		Vertex(-0.9f,  0.5f, 1.0f, 1.0f, 0.0f),
-		Vertex(-0.9f, -0.5f, 1.0f, 1.0f, 1.0f),
+		Vertex(1.0f, -0.5f, 1.0f, 0.0f, 1.0f), // - BR
+		Vertex(1.0f,  0.5f, 1.0f, 0.0f, 0.0f), // - TR
+		Vertex(0.1f,  0.5f, 1.0f, 1.0f, 0.0f), // - TL
+		Vertex(0.1f, -0.5f, 1.0f, 1.0f, 1.0f), // - BL
 	};
 
 		DWORD indices2[] =
@@ -343,6 +335,7 @@ bool Graphics::sceneInitizer()
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
 	}
+
 
 	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"Data\\Textures\\Skull.png", nullptr, texture.GetAddressOf());
 	if (FAILED(hr))
