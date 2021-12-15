@@ -4,6 +4,7 @@
 #include "Vertex.h"
 #include <WICTextureLoader.h>
 #include "Indexbuffer.h"
+#include "ConstantBufferTypes.h"
 
 class Graphics
 {
@@ -21,8 +22,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
 
 	VertexShader vertexShader;
-	
 	PixelShader pixel;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constBuffer;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer2;

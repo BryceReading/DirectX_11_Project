@@ -36,6 +36,15 @@ void Graphics::frameRender()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
+	//** Update Constant Buffer **//
+	CB_VS_vertexShader data;
+	data.x_Offset = 0.0f;
+	data.y_Offset = 0.5f;
+	D3D11_MAPPED_SUBRESOURCE resourceMapped;
+	HRESULT hr = this->deviceContext->Map(constBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &resourceMapped);
+	CopyMemory(resourceMapped.pData, &data, sizeof(CB_VS_vertexShader));
+	this->deviceContext->Unmap(constBuffer.Get(), 0);
+	this->deviceContext->VSSetConstantBuffers(0, 1, constBuffer.GetAddressOf());
 
 	// Iner Triangle
 	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
@@ -343,6 +352,22 @@ bool Graphics::sceneInitizer()
 		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
 		return false;
 
+	}
+
+	//** constatnt Buffer initilizer **//
+	D3D11_BUFFER_DESC desc;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.ByteWidth = static_cast<UINT>(sizeof(CB_VS_vertexShader) + (16 - (sizeof(CB_VS_vertexShader) % 16)));
+	desc.StructureByteStride = 0;
+
+	hr = device->CreateBuffer(&desc, 0, constBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize constant budffer.");
+		return false;
 	}
 
 	return true;
