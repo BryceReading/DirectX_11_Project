@@ -37,8 +37,8 @@ void Graphics::frameRender()
 	UINT offset = 0;
 
 	//** Update Constant Buffer **//
-	constBuffer.data.x_Offset = 0.0f;
-	constBuffer.data.y_Offset = 0.5f;
+	constBuffer.data.mx = DirectX::XMMatrixTranslation(0.0f, -0.5f, 0.0f);
+	constBuffer.data.mx = DirectX::XMMatrixTranspose(constBuffer.data.mx); // Changes the matrix from collum major format to row major format.
 	if (!constBuffer.ApplyChanges())
 		return;
 	this->deviceContext->VSSetConstantBuffers(0, 1, this->constBuffer.GetAddressOf());
