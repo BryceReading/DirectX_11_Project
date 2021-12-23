@@ -13,7 +13,7 @@ public:
 	bool Initialize(HWND hWnd, int width, int height);
 	void frameRender();
 private:
-	bool InitializeDX(HWND hwnd, int width, int height);
+	bool InitializeDX(HWND hwnd);
 	bool shaderInitizer();
 	bool sceneInitizer();
 
@@ -40,4 +40,6 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 
+	int wind_Width = 0;
+	int wind_Height = 0;
 };
