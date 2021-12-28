@@ -9,6 +9,6 @@ SamplerState objectSS : SAMPLER : register(s0);
 
 float4 main(PS_INPUT inP) : SV_TARGET
 {
-    float3 pixColor = objectTex.Sample(objectSS, inP.texCoordIn);
-    return float4(pixColor, 1.0f);
+    float3 pixColour = objectTex.Sample(objectSS, inP.texCoordIn);
+    return float4(pixColour, 1.0f);
 }

@@ -40,6 +40,6 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 
-	int wind_Width = 0;
-	int wind_Height = 0;
+	int windWidth = 0;
+	int windHeight = 0;
 };

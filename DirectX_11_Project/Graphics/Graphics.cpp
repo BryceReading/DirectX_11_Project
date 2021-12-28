@@ -2,8 +2,8 @@
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
-	this->wind_Width = width;
-	this->wind_Height = height;
+	this->windWidth = width;
+	this->windHeight = height;
 
 	if (!InitializeDX(hwnd))
 		return false;
@@ -42,20 +42,20 @@ void Graphics::frameRender()
 	//** Update Constant Buffer && Matrices**//
 	DirectX::XMMATRIX worldMx = DirectX::XMMatrixIdentity(); // Get the object in the worlds coordinates.
 	
-	static DirectX::XMVECTOR eyePos = DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f);
+	static DirectX::XMVECTOR eyePos = DirectX::XMVectorSet(0.0f, -4.0f, -2.0f, 0.0f);
 	
 	DirectX::XMFLOAT3 float3EyePos;
 	DirectX::XMStoreFloat3(&float3EyePos, eyePos);
 	float3EyePos.y += 0.01f;
 	eyePos = DirectX::XMLoadFloat3(&float3EyePos);
 	
-	static DirectX::XMVECTOR posLookAt = DirectX::XMVectorSet(0.0f, 0.0f, -2.0f, 0.0f); // Looks at the world
+	static DirectX::XMVECTOR posLookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); // Looks at the world
 	static DirectX::XMVECTOR vectorUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Positive Y Axis || UP
 	DirectX::XMMATRIX viewMX = DirectX::XMMatrixLookAtLH(eyePos, posLookAt, vectorUp); // LH stands for left handed, left handed coordinate system
 
 	float fov = 90.0f;
 	float fovRad = (fov / 360.0f) * DirectX::XM_2PI;
-	float aspectR = static_cast<float>(this->wind_Width) / static_cast<float>(this->wind_Height);
+	float aspectR = static_cast<float>(this->windWidth) / static_cast<float>(this->windHeight);
 	float zNear = 0.1f;
 	float zFar = 1000.0f;
 	DirectX::XMMATRIX projectionMX = DirectX::XMMatrixPerspectiveFovLH(fovRad, aspectR, zNear, zFar);
@@ -67,7 +67,7 @@ void Graphics::frameRender()
 		return;
 	this->deviceContext->VSSetConstantBuffers(0, 1, this->constBuffer.GetAddressOf());
 
-	// Square
+	// Image
 	this->deviceContext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 	this->deviceContext->IASetIndexBuffer(bufferIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
@@ -90,8 +90,8 @@ bool Graphics::InitializeDX(HWND hwnd)
 	DXGI_SWAP_CHAIN_DESC scd;
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	scd.BufferDesc.Width = this->wind_Width;
-	scd.BufferDesc.Height = this->wind_Height;
+	scd.BufferDesc.Width = this->windWidth;
+	scd.BufferDesc.Height = this->windHeight;
 	scd.BufferDesc.RefreshRate.Numerator = 60;
 	scd.BufferDesc.RefreshRate.Denominator = 1;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -149,8 +149,8 @@ bool Graphics::InitializeDX(HWND hwnd)
 
 	//** Depth/Stencil Buffer Desc **//
 	D3D11_TEXTURE2D_DESC depthSD;
-	depthSD.Width = this->wind_Width;
-	depthSD.Height = this->wind_Height;
+	depthSD.Width = this->windWidth;
+	depthSD.Height = this->windHeight;
 	depthSD.MipLevels = 1;
 	depthSD.ArraySize = 1;
 	depthSD.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -198,15 +198,15 @@ bool Graphics::InitializeDX(HWND hwnd)
 
 	viewP.TopLeftX = 0;
 	viewP.TopLeftY = 0;
-	viewP.Width = this->wind_Width;
-	viewP.Height = this->wind_Height;
+	viewP.Width = this->windWidth;
+	viewP.Height = this->windHeight;
 	viewP.MinDepth = 0.0f;
 	viewP.MaxDepth = 1.0f;
 
-	// Set the Viewport
+	//** Set the Viewport **//
 	this->deviceContext->RSSetViewports(1, &viewP);
 
-	// Rasterizer state created
+	//** Rasterizer state created **//
 	D3D11_RASTERIZER_DESC rasterDesc;
 	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
@@ -220,7 +220,7 @@ bool Graphics::InitializeDX(HWND hwnd)
 		return false;
 	}
 
-	//** Sampler State **// Does fully work
+	//** Sampler State **// 
 	D3D11_SAMPLER_DESC sDesc;
 	ZeroMemory(&sDesc, sizeof(sDesc));
 	sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
