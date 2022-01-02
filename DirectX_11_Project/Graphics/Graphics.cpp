@@ -46,7 +46,7 @@ void Graphics::frameRender()
 	
 	DirectX::XMFLOAT3 float3EyePos;
 	DirectX::XMStoreFloat3(&float3EyePos, eyePos);
-	float3EyePos.y += 0.01f;
+	float3EyePos.y += 0.02f;
 	eyePos = DirectX::XMLoadFloat3(&float3EyePos);
 	
 	static DirectX::XMVECTOR posLookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); // Looks at the world
