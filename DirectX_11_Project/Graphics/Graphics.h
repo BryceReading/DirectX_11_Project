@@ -13,6 +13,8 @@ class Graphics
 public:
 	bool Initialize(HWND hWnd, int width, int height);
 	void frameRender();
+	Camera cam;
+
 private:
 	bool InitializeDX(HWND hwnd);
 	bool shaderInitizer();
@@ -44,5 +46,4 @@ private:
 	int windWidth = 0;
 	int windHeight = 0;
 
-	Camera cam;
 };

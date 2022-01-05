@@ -27,6 +27,33 @@ void engine::update()
 		KeyboardEvent event = keyboard.readKey();
 		unsigned char keyCode = event.getKeyCoad();
 	}
+
+	const float camSpeed = 0.02f;
+
+	if (keyboard.keyIsPressed('W'))
+	{
+		this->gfx.cam.positionAdjust(this->gfx.cam.getVectorForward() * camSpeed);
+	}
+	if (keyboard.keyIsPressed('S'))
+	{
+		this->gfx.cam.positionAdjust(this->gfx.cam.getVectorBackwards() * camSpeed);
+	}
+	if (keyboard.keyIsPressed('A'))
+	{
+		this->gfx.cam.positionAdjust(this->gfx.cam.getVectorLeft() * camSpeed);
+	}
+	if (keyboard.keyIsPressed('D'))
+	{
+		this->gfx.cam.positionAdjust(this->gfx.cam.getVectorRight() * camSpeed);
+	}
+	if (keyboard.keyIsPressed(VK_SPACE))
+	{
+		this->gfx.cam.postitinAdjust(0.0f, camSpeed, 0.0f);
+	}
+	if (keyboard.keyIsPressed('Z'))
+	{
+		this->gfx.cam.postitinAdjust(0.0f, -camSpeed, 0.0f);
+	}
 }
 
 void engine::frameRender()

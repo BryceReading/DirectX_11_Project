@@ -41,8 +41,6 @@ void Graphics::frameRender()
 
 	//** Update Constant Buffer && Matrices**//
 	XMMATRIX worldMx = DirectX::XMMatrixIdentity(); // Get the object in the worlds coordinates.
-	cam.postitinAdjust(0.01f, 0.0f, 0.0f);
-	cam.lookAtset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	constBuffer.data.mx = worldMx * cam.getViewMatrix() * cam.getProjectionMatrix();
 	constBuffer.data.mx = DirectX::XMMatrixTranspose(constBuffer.data.mx); // Changes the matrix from collum major format to row major format.
 
