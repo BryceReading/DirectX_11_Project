@@ -108,6 +108,33 @@ void Camera::rotationAdjust(float x, float y, float z)
 	this->viewMatrixUpdate();
 }
 
+void Camera::lookAtset(XMFLOAT3 lookAt)
+{
+	if (lookAt.x == this->position.x && lookAt.y == this->position.y && lookAt.z == this->position.z)
+		return;
+
+	lookAt.x = this->position.x - lookAt.x;
+	lookAt.y = this->position.y - lookAt.y;
+	lookAt.z = this->position.z - lookAt.z;
+
+	float pitch = 0.0f;
+	if (lookAt.y != 0.0f)
+	{
+		const float dis = sqrt(lookAt.x * lookAt.x + lookAt.z * lookAt.z);
+		pitch = atan(lookAt.y / dis);
+	}
+
+	float yaw = 0.0f;
+	if (lookAt.x != 0.0f)
+	{
+		yaw = atan(lookAt.x / lookAt.z);
+	}
+	if (lookAt.z > 0)
+		yaw += XM_PI;
+
+	this->rotationSet(pitch, yaw, 0.0f);
+}
+
 void Camera::viewMatrixUpdate() // This updates the view matrix and also the movement vectors
 {
 	// Camera rotation matrix calculation

@@ -6,6 +6,7 @@
 #include "Indexbuffer.h"
 #include "ConstantBufferTypes.h"
 #include "ConstantBuffer.h"
+#include "Camera.h"
 
 class Graphics
 {
@@ -42,4 +43,6 @@ private:
 
 	int windWidth = 0;
 	int windHeight = 0;
+
+	Camera cam;
 };

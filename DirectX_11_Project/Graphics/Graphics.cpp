@@ -40,28 +40,30 @@ void Graphics::frameRender()
 	UINT offset = 0;
 
 	//** Update Constant Buffer && Matrices**//
-	DirectX::XMMATRIX worldMx = DirectX::XMMatrixIdentity(); // Get the object in the worlds coordinates.
-	
-	static DirectX::XMVECTOR eyePos = DirectX::XMVectorSet(0.0f, -4.0f, -2.0f, 0.0f);
-	
-	DirectX::XMFLOAT3 float3EyePos;
-	DirectX::XMStoreFloat3(&float3EyePos, eyePos);
-	float3EyePos.y += 0.02f;
-	eyePos = DirectX::XMLoadFloat3(&float3EyePos);
-	
-	static DirectX::XMVECTOR posLookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); // Looks at the world
-	static DirectX::XMVECTOR vectorUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Positive Y Axis || UP
-	DirectX::XMMATRIX viewMX = DirectX::XMMatrixLookAtLH(eyePos, posLookAt, vectorUp); // LH stands for left handed, left handed coordinate system
-
-	float fov = 90.0f;
-	float fovRad = (fov / 360.0f) * DirectX::XM_2PI;
-	float aspectR = static_cast<float>(this->windWidth) / static_cast<float>(this->windHeight);
-	float zNear = 0.1f;
-	float zFar = 1000.0f;
-	DirectX::XMMATRIX projectionMX = DirectX::XMMatrixPerspectiveFovLH(fovRad, aspectR, zNear, zFar);
-
-	constBuffer.data.mx = worldMx * viewMX * projectionMX;
+	XMMATRIX worldMx = DirectX::XMMatrixIdentity(); // Get the object in the worlds coordinates.
+	cam.postitinAdjust(0.01f, 0.0f, 0.0f);
+	cam.lookAtset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	constBuffer.data.mx = worldMx * cam.getViewMatrix() * cam.getProjectionMatrix();
 	constBuffer.data.mx = DirectX::XMMatrixTranspose(constBuffer.data.mx); // Changes the matrix from collum major format to row major format.
+
+	// Code used to make the camera pan up the object.
+	/*static XMVECTOR eyePos = DirectX::XMVectorSet(0.0f, -4.0f, -2.0f, 0.0f);
+	//
+	//DirectX::XMFLOAT3 float3EyePos;
+	//DirectX::XMStoreFloat3(&float3EyePos, eyePos);
+	//float3EyePos.y += 0.02f;
+	//eyePos = DirectX::XMLoadFloat3(&float3EyePos);
+	//
+	//static DirectX::XMVECTOR posLookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); // Looks at the world
+	//static DirectX::XMVECTOR vectorUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // Positive Y Axis || UP
+	//DirectX::XMMATRIX viewMX = DirectX::XMMatrixLookAtLH(eyePos, posLookAt, vectorUp); // LH stands for left handed, left handed coordinate system
+
+	//float fov = 90.0f;
+	//float fovRad = (fov / 360.0f) * DirectX::XM_2PI;
+	//float aspectR = static_cast<float>(this->windWidth) / static_cast<float>(this->windHeight);
+	//float zNear = 0.1f;
+	//float zFar = 1000.0f;
+	DirectX::XMMATRIX projectionMX = DirectX::XMMatrixPerspectiveFovLH(fovRad, aspectR, zNear, zFar);*/ 
 	
 	if (!constBuffer.ApplyChanges())
 		return;
@@ -335,5 +337,7 @@ bool Graphics::sceneInitizer()
 		return false;
 	}
 
+	cam.setPosition(.0f, 0.0f, -2.0f);
+	cam.setProjectionValues(90.0f, static_cast<float>(windWidth) / static_cast<float>(windHeight), 0.1f, 1000.0f);
 	return true;
 }
